@@ -1,0 +1,16 @@
+---
+- hosts: all
+  sudo: yes
+  tasks:
+    - name: Setup {{ user }} user
+      user: name={{ user }} comment="{{ user }}user" uid=1040 shell=/bin/bash
+
+    - name: create ssh directory for user {{ user }}
+      file: path=/home/{{ user }}/.ssh owner={{ user }} group={{ user }} state=directory mode=0600
+
+    - name: Set up authorized_keys for {{ user }} user
+      authorized_key: user={{ user }}
+                      key="{{ item }}"
+      with_file:
+        - files/id_{{ user }}.pub
+

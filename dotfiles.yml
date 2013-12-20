@@ -1,0 +1,32 @@
+---
+- hosts: all
+  sudo: yes
+  tasks:
+    - name: Setup bash env
+      git: repo=git://github.com/bdargan/dotfiles.git dest=/home/{{ user }}/setup/dotfiles
+
+    - file: path=/home/{{ user }}/setup/ owner={{ user }} group={{ user }} recurse=yes
+
+    - name: Install dotfiles
+      file: src=/home/{{ user }}/setup/dotfiles/_{{ item }} dest=/home/{{ user }}/.{{ item }}  state=link owner={{ user }} group={{ user }}
+      with_items:
+        - zshrc
+        - bashrc
+        - exports
+        - aliases
+        - functions
+        - bash_profile
+        - bash_prompt
+        - wgetrc
+
+#      command: ./install.sh ../.. chdir=/home/{{ user }}/setup/dotfiles
+
+    - name: Init fasd
+      command: ./fasd --init chdir=/home/{{ user }}/setup/dotfiles/fasd
+
+    - name: Setup oh-my-zsh
+      git: repo=git://github.com/bdargan/oh-my-zsh.git dest=/home/{{ user }}/.oh-my-zsh
+
+    - file: path=/home/{{ user }}/.oh-my-zsh owner={{ user }} group={{ user }} recurse=yes
+
+    - command: chsh -s /bin/zsh

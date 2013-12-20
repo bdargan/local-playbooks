@@ -1,0 +1,18 @@
+---
+- hosts: all
+  sudo: yes
+  tasks:
+    - name: Update Apt cache
+      apt: update_cache=yes cache_valid_time=604800
+
+    - name: Install Packages
+      action: apt pkg={{item}} state=latest update-cache=yes cache_valid_time=604800
+      tags: common
+      with_items:
+        - nginx
+        - redis-server
+        - build-essential
+        - curl
+        - zsh
+        - git
+
